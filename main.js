@@ -73,8 +73,8 @@ function OrderByRangeKM(data, range) {
 
 // Example usage
 const yourPos = {
-  lat: 36.4894,
-  long: 2.8518,
+    lat: 36.81163527699525,
+    long: 3.22816114502549,
 };
 
 const target = [

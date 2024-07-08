@@ -6,7 +6,7 @@ function haversine(yourPos, target) {
     let total = [];
 
     try {
-      for (let i = 0; i < target.length; i++) {
+    for (let i = 0; i < target.length; i++) {
         const targetLat = degreesToRadians(target[i].lat);
         const targetLong = degreesToRadians(target[i].long);
 
@@ -28,47 +28,51 @@ function haversine(yourPos, target) {
         const tfMeters = distanceMeters.toFixed(0);
 
         total.push({
-          name: target[i].name,
-          kilometers: {
+        name: target[i].name,
+        kilometers: {
             distance: parseFloat(tfKm),
             per: "KM",
-          },
-          meters: {
+        },
+        meters: {
             distance: parseInt(tfMeters),
             per: "M",
-          },
-          lat: target[i].lat,
-          long: target[i].long,
+        },
+        lat: target[i].lat,
+        long: target[i].long,
         });
-      }
-
-      resolve(total);
-    } catch (error) {
-      reject(error);
     }
-  });
+
+    resolve(total);
+    } catch (error) {
+    reject(error);
+    }
+});
 }
 
 function degreesToRadians(degrees) {
   return degrees * (Math.PI / 180);
 }
 
-function OrderByDistanceKM(data) {
+async function OrderByDistanceKM(data) {
   let n = data.length;
   let swapped;
-  do {
-    swapped = false;
-    for (let i = 0; i < n - 1; i++) {
-      if (data[i].kilometers.distance > data[i + 1].kilometers.distance) {
-        let temp = data[i];
-        data[i] = data[i + 1];
-        data[i + 1] = temp;
-        swapped = true;
-      }
-    }
-    n--;
-  } while (swapped);
-  return data;
+  try {
+    do {
+        swapped = false;
+        for (let i = 0; i < n - 1; i++) {
+        if (data[i].kilometers.distance > data[i + 1].kilometers.distance) {
+            let temp = data[i];
+            data[i] = data[i + 1];
+            data[i + 1] = temp;
+            swapped = true;
+          }
+        }
+        n--;
+      } while (swapped);
+      return data;
+  } catch (error) {
+    throw new Error("Error filtering data: " + error.message);
+  }
 }
 
 async function OrderByRangeKM(data, range) {
@@ -84,8 +88,8 @@ async function OrderByRangeKM(data, range) {
 }
 
 const yourPos = {
-  lat: 36.4894,
-  long: 2.8518,
+  lat: 36.81163527699525,
+  long: 3.22816114502549,
 };
 
 const target = [
@@ -120,8 +124,8 @@ const target = [
 async function runExample() {
   try {
     const response = await haversine(yourPos, target);
-    const sortedResponse = OrderByDistanceKM(response);
-    const filteredResponse = await OrderByRangeKM(sortedResponse, 499);
+    const sortedResponse = await OrderByDistanceKM(response);
+    const filteredResponse = await OrderByRangeKM(sortedResponse, 600);
 
     console.log(filteredResponse);
   } catch (error) {
